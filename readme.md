@@ -30,15 +30,64 @@ Weather data is critical for understanding climate patterns and their impacts on
 
 ## Project Architecture
 
-![Architecture Diagram](images/architecture_diagram.png)
-*[Architecture diagram showing the data flow from source through transformation to visualization]*
-
 The architecture follows these key steps:
 1. Infrastructure provisioning with Terraform (GKE, BigQuery, IAM)
 2. Extract data from public NOAA dataset in BigQuery using Kestra running on GKE
 3. Process and transform data using BigQuery and store in optimized tables
 4. Model data using dbt for analytical purposes
 5. Visualize insights using Looker Studio dashboards
+
+![Architecture Diagram](images/Architecture.JPG)
+
+### NOAA Weather Data Analysis Pipeline Architecture Explanation
+This architecture diagram illustrates the complete data flow of your NOAA weather analysis project, focusing on the key components and their interactions:
+1. Infrastructure Layer
+
+Terraform provisions and manages all the GCP resources, including BigQuery datasets, GCS buckets, and service accounts with appropriate IAM permissions.
+
+2. Data Sourcing
+
+Public NOAA GSOD Dataset: Available in BigQuery as the source of weather data.
+
+3. Data Extraction & Processing
+
+Kestra Workflow Orchestration: Running on Google Kubernetes Engine (GKE)
+
+- The extract_data task queries the NOAA public dataset
+- Data flows to a temporary storage in BigQuery (temp_dataset.noaa_weather_raw)
+- The transform_data task applies initial transformations, categorizations, and optimizations
+- The cleanup task removes temporary data
+
+4. Data Storage & Warehousing
+
+Google Cloud Storage: Acts as a temporary data lake for the pipeline
+BigQuery: Serves as the data warehouse with optimized tables (partitioned by month and clustered by station_id, latitude, longitude)
+
+5. Data Modeling
+
+dbt: Handles advanced transformations, creating:
+
+- Staging views
+- Dimension tables (stations, time periods)
+- Fact tables (daily weather metrics)
+
+6. Data Visualization
+
+Looker Studio: Creates interactive dashboards showing:
+
+- Categorical distribution of weather conditions
+- Temporal analysis of temperature trends
+
+### Key Benefits of This Architecture:
+
+- Fully Managed Services: Relies on GCP's managed services, reducing operational overhead
+- Scalability: Can handle large volumes of weather data efficiently
+- Optimization: Tables are partitioned and clustered for query performance
+- Reproducibility: Infrastructure as code ensures consistent deployment
+- Orchestration: Kestra manages the workflow dependencies and scheduling
+
+This architecture follows data engineering best practices with clear separation of concerns between extraction, storage, transformation, and visualization layers.
+
 
 ## Project Components
 
@@ -171,7 +220,12 @@ The project uses a GKE cluster to run Kestra for workflow orchestration:
 - Helm chart for Kestra deployment
 - LoadBalancer service to expose the Kestra UI
 
+
+
 **Snippet of GKE Cluster:**
+
+![GKE Cluster](images/GKE.JPG)
+
 ```bash
 (.venv) [calvin@devsjc DE-ZoomCamp]$ gcloud container clusters describe kestra-cluster --region=us-central1
 addonsConfig:
