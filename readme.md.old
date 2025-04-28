@@ -1,32 +1,5 @@
 # NOAA Weather Data Analysis Pipeline
 
-## TL;DR
-
-This project builds an end-to-end data pipeline on Google Cloud Platform that processes NOAA Global Summary of Day (GSOD) weather data, optimizes it in BigQuery, and visualizes climate patterns through an interactive Looker Studio dashboard. The pipeline uses Terraform for infrastructure, Kestra for workflow orchestration, and dbt for transformations.
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [Problem Description](#problem-description)
-- [Technology Stack](#technology-stack)
-- [Project Architecture](#project-architecture)
-- [Project Components](#project-components)
-  - [Infrastructure (Terraform)](#1-infrastructure-terraform)
-  - [Kubernetes Deployment for Kestra](#2-kubernetes-deployment-for-kestra)
-  - [Data Pipeline (Kestra)](#3-data-pipeline-kestra)
-  - [Data Transformations (dbt)](#4-data-transformations-dbt)
-  - [Analytics (BigQuery)](#5-analytics-bigquery)
-  - [Visualization (Looker Studio)](#6-visualization-looker-studio)
-- [Project Structure](#project-structure)
-- [Setup Instructions](#setup-instructions)
-- [Implementation Details](#implementation-details)
-- [Performance Metrics](#performance-metrics)
-- [Security Considerations](#security-considerations)
-- [Project Results](#project-results)
-- [Troubleshooting](#troubleshooting)
-- [Future Enhancements](#future-enhancements)
-- [References](#references)
-
 ## Project Overview
 
 **Project Title:** NOAA Weather Data Analysis Pipeline: Understanding Global Weather Patterns
@@ -115,36 +88,6 @@ Looker Studio: Creates interactive dashboards showing:
 
 This architecture follows data engineering best practices with clear separation of concerns between extraction, storage, transformation, and visualization layers.
 
-## Project Structure
-
-```
-noaa-weather-pipeline/
-├── terraform/                  # Infrastructure as code
-│   ├── main.tf                 # Main Terraform configuration
-│   ├── variables.tf            # Variable definitions
-│   ├── outputs.tf              # Output definitions
-│   └── README.md               # Terraform specific instructions
-├── kestra/                     # Workflow orchestration
-│   └── workflows/
-│       └── noaa_weather_ingest.yml  # Data ingestion workflow
-├── dbt/                        # Data transformation
-│   ├── models/
-│   │   ├── staging/
-│   │   │   └── stg_weather_data.sql
-│   │   ├── dimensions/
-│   │   │   └── dim_stations.sql
-│   │   └── facts/
-│   │       └── fact_daily_weather.sql
-│   ├── dbt_project.yml
-│   └── profiles.yml
-├── dashboards/                 # Looker Studio exports
-│   └── weather_dashboard.json
-├── images/                     # Documentation images
-│   ├── Architecture.JPG
-│   ├── GKE.JPG
-│   └── ...
-└── README.md                   # This file
-```
 
 ## Project Components
 
@@ -184,7 +127,38 @@ google_container_cluster.kestra_cluster: Creating...
 google_project_iam_binding.bigquery_admin: Creation complete after 8s [id=de-zoomcamp-p3-gsod/roles/bigquery.admin]
 google_project_iam_binding.storage_admin: Creation complete after 8s [id=de-zoomcamp-p3-gsod/roles/storage.admin]
 google_container_cluster.kestra_cluster: Still creating... [10s elapsed]
-# ... [truncated for brevity]
+google_container_cluster.kestra_cluster: Still creating... [20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m30s elapsed]
 google_container_cluster.kestra_cluster: Creation complete after 5m31s [id=projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster]
 
 Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
@@ -193,7 +167,50 @@ Outputs:
 
 gcs_bucket = "de-zoomcamp-p3-gsod-datalake"
 gke_cluster = "kestra-cluster"
-# ... [truncated for brevity]
+gke_command = "gcloud container clusters get-credentials kestra-cluster --region us-central1 --project de-zoomcamp-p3-gsod"
+kestra_install_commands = <<EOT
+# Get cluster credentials
+gcloud container clusters get-credentials kestra-cluster --region us-central1 --project de-zoomcamp-p3-gsod
+
+# Install Kestra using Helm
+helm repo add kestra https://kestra-io.github.io/helm-charts
+helm repo update
+helm install kestra kestra/kestra \
+  --set env.config.kestra.storage.type=gcs \
+  --set env.config.kestra.storage.gcs.bucket=de-zoomcamp-p3-gsod-kestra \
+  --set env.config.kestra.variables.gcp.project=de-zoomcamp-p3-gsod \
+  --set env.config.kestra.variables.gcp.serviceAccount=weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+
+
+NAME: kestra
+LAST DEPLOYED: Sun Apr 27 22:21:39 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=kestra,app.kubernetes.io/instance=kestra,app.kubernetes.io/component=standalone" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl port-forward --namespace default $POD_NAME 8080:8080
+  
+
+# Create a service to access the UI
+kubectl expose deployment kestra --type=LoadBalancer --name=kestra-ui --port=8080
+
+# Get the external IP (this may take a minute)
+kubectl get service kestra-ui
+
+# Wait until you see an external IP, then import the workflow
+export KESTRA_URL=$(kubectl get service kestra-ui -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):8080
+curl -X POST "http://$KESTRA_URL/api/v1/flows/import" -H "Content-Type: application/yaml" --data-binary @<(gsutil cat gs://de-zoomcamp-p3-gsod-kestra/workflows/noaa_weather_ingest.yml)
+
+# Execute the workflow
+curl -X POST "http://$KESTRA_URL/api/v1/executions" -H "Content-Type: application/json" -d '{"namespace":"weather","flowId":"noaa_weather_ingest"}'
+
+EOT
+kestra_storage_bucket = "de-zoomcamp-p3-gsod-kestra"
+service_account = "weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com"
 ```
 
 ### 2. Kubernetes Deployment for Kestra
@@ -203,9 +220,215 @@ The project uses a GKE cluster to run Kestra for workflow orchestration:
 - Helm chart for Kestra deployment
 - LoadBalancer service to expose the Kestra UI
 
+
+
 **Snippet of GKE Cluster:**
 
 ![GKE Cluster](images/GKE.JPG)
+
+```bash
+(.venv) [calvin@devsjc DE-ZoomCamp]$ gcloud container clusters describe kestra-cluster --region=us-central1
+addonsConfig:
+  gcePersistentDiskCsiDriverConfig:
+    enabled: true
+  kubernetesDashboard:
+    disabled: true
+  networkPolicyConfig:
+    disabled: true
+autopilot: {}
+autoscaling:
+  autoscalingProfile: BALANCED
+binaryAuthorization: {}
+clusterIpv4Cidr: 10.4.0.0/14
+controlPlaneEndpointsConfig:
+  dnsEndpointConfig:
+    allowExternalTraffic: false
+    endpoint: gke-75caa7fbdd624651ae8f8534d56f2dc2111a-292021135316.us-central1.gke.goog
+  ipEndpointsConfig:
+    authorizedNetworksConfig:
+      gcpPublicCidrsAccessEnabled: true
+    enablePublicEndpoint: true
+    enabled: true
+    privateEndpoint: 10.128.0.2
+    publicEndpoint: 34.59.217.xx
+createTime: '2025-04-28T02:09:11+00:00'
+currentMasterVersion: 1.32.2-gke.1182003
+currentNodeCount: 3
+currentNodeVersion: 1.32.2-gke.1182003
+databaseEncryption:
+  currentState: CURRENT_STATE_DECRYPTED
+  state: DECRYPTED
+defaultMaxPodsConstraint:
+  maxPodsPerNode: '110'
+endpoint: 34.59.217.143
+enterpriseConfig:
+  clusterTier: STANDARD
+etag: 52e82870-5074-44eb-9ffa-e62c6390620f
+id: 75caa7fbdd624651ae8f8534d56f2dc2111a1aa50f5042268c1ca4cbb76c0193
+initialClusterVersion: 1.32.2-gke.1182003
+initialNodeCount: 1
+instanceGroupUrls:
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-c/instanceGroupManagers/gke-kestra-cluster-default-pool-2eb2e5a6-grp
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-f/instanceGroupManagers/gke-kestra-cluster-default-pool-723a1c4d-grp
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-a/instanceGroupManagers/gke-kestra-cluster-default-pool-da610606-grp
+ipAllocationPolicy:
+  clusterIpv4Cidr: 10.4.0.0/14
+  clusterIpv4CidrBlock: 10.4.0.0/14
+  clusterSecondaryRangeName: gke-kestra-cluster-pods-75caa7fb
+  defaultPodIpv4RangeUtilization: 0.0029
+  podCidrOverprovisionConfig: {}
+  servicesIpv4Cidr: 34.118.224.0/20
+  servicesIpv4CidrBlock: 34.118.224.0/20
+  stackType: IPV4
+  useIpAliases: true
+labelFingerprint: 78cdf2f6
+legacyAbac: {}
+location: us-central1
+locations:
+- us-central1-c
+- us-central1-f
+- us-central1-a
+loggingConfig:
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - WORKLOADS
+loggingService: logging.googleapis.com/kubernetes
+maintenancePolicy:
+  resourceVersion: e3b0c442
+masterAuth:
+  clientCertificateConfig: {}
+  clusterCaCertificate: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVMVENDQXBXZ0F3SUJBZ0lSQUlySGlHbk55aVFnQmpWWFlBYytpTE13RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa056UTBPVGsyTlRndE9HVmhNaTAwTURFNExUZ3daR1V0WVRkaE1qSmpaVFZpTlRrMQpNQ0FYRFRJMU1EUXlPREF4TURreE1sb1lEekl3TlRVd05ESXhNREl3T1RFeVdqQXZNUzB3S3dZRFZRUURFeVEzCk5EUTVPVFkxT0MwNFpXRXlMVFF3TVRndE9EQmtaUzFoTjJFeU1tTmxOV0kxT1RVd2dnR2lNQTBHQ1NxR1NJYjMKRFFFQkFRVUFBNElCandBd2dnR0tBb0lCZ1FDcTIxOHZTR1BLU1ppWGNXWGExc0tYUWhmekpOaUV1dWQ1OUxvWgpLNlNWalhzcnNDSzNUQWl6NnFMZzllbUVta2M1UW5BN0Y0UGhRaXhHcXIranhaS0xyclIzZWlWd3lFSVlUeVV4CmIzUllITHJtSDIzdFcvbTRpZmdIYmxsL1A3cElZdVJLYmhRK2tKNE43S1dwMzJDMmk2Ym9NSW1NbU55VEJJZjMKV0gxYjRaRUx3bmlVZkhRZWlCdi8wYjhGbkNjdDFWb1ZzVXV1UkNxTzl4eEFuV0Fyd05Fc1cwKzV2bTdVcW5PWQpoV1FaMlErMVZPRUREK1Y0N3VxZXlrbFZOVjZPYktrN3JDOEU0c09LcXJMSVJTenN5VG05MkRsaDNSVVF0alhFClRkc2tKbUhvQjRmMGtwQ3VmSGFlNS9VNGlVUmxjSUxZaDZqOW5UK2w0dml1TFR2N09jeGVjYXk1OGVUVXZrMUcKa0ZER1pWanBtMS9UTXpzMWpwMzJrc0t5Q3ppazJpOXB4Z2FGb2QySjVIaHZOQUVvbmtxQzBnRTBRblF1b29ueApiZjY2M1pKaXQrcitlOU5EbkUxdTViaVpUQ1JwTkFkdGROcDhhdHZGTXBUQjhsUHhTRktuaEcwbmY4MWlpK2xBCnVNcElSM0ZBaWk4NDNRc2RWWk5WSXY4MU05OENBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdJRU1BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGRXNFRUJPdWxoN0txejBzNFVwNU5JMkZJaUJpTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQmdRQmhDbkIrY1VKSERVUW41NU9pdDJKbWxSY3g4RDhvTlpoUnNXeXVzVXhuCmVyMUloWUtvNE54NUY3OTdiL1AzdUU1anY0UGJRUFI2K0JvTHVscVF0Y21WdDVRYlRyK29iL04vTmVKZ01leVgKNXgrSDBYdnBVSU5PZW9zL1JxdGRQdUFPT0U0QlovMDJLQjRLQlFhU2NzbEsrZVhwZG5KQzBuWEhPN0w2cUZMWQoveXJsdU8xNDB1SUkzd095SS81N0Z3VmVRZEpqKzBIMWFPV2FqR0tmSDAxTDFzMnV1MTNSMDdoTUJjeDNoTEUvCmNIc1QwTFpJTUdvNDBkVDBtc2dJeCtCb2ZMK0hsNTR1NjNGaElmRjZDdXlsRWlPbU5wZmtzcmk1dkxaNUNxN0QKbXlQQ2taVGkzU3Y2S0diMjVPdDJLL3JiLzNScFhmclF4bjEwUTlBNHRXTkZRRHlIUTFLbGxvTS81OWRTZEJOTwpSOTA1QWVFVGI0ckwrZU10RXNSeSt3cGkxSmhWdjBJb3ZidE0wdFQrTGs4Um5yNTIxdmFMaWdxZ0ZaZ3JBSndwCkd0OTVwL3h2Y3J0c1ZKK2dJaDhuaHBuTWtGenVUUVNlaThCRFI1Q2plMExwN2xWVytFSm1CRG0wQ0NRaVdibngKK1Y1WDhISkk4YlFseWphQUxIYVFrVjQ9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+masterAuthorizedNetworksConfig:
+  gcpPublicCidrsAccessEnabled: true
+monitoringConfig:
+  advancedDatapathObservabilityConfig: {}
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - DAEMONSET
+    - DEPLOYMENT
+    - STATEFULSET
+    - JOBSET
+    - STORAGE
+    - HPA
+    - POD
+    - CADVISOR
+    - KUBELET
+    - DCGM
+  managedPrometheusConfig:
+    enabled: true
+monitoringService: monitoring.googleapis.com/kubernetes
+name: kestra-cluster
+network: default
+networkConfig:
+  defaultSnatStatus: {}
+  network: projects/de-zoomcamp-p3-gsod/global/networks/default
+  serviceExternalIpsConfig: {}
+  subnetwork: projects/de-zoomcamp-p3-gsod/regions/us-central1/subnetworks/default
+nodeConfig:
+  diskSizeGb: 50
+  diskType: pd-standard
+  effectiveCgroupMode: EFFECTIVE_CGROUP_MODE_V2
+  imageType: COS_CONTAINERD
+  kubeletConfig:
+    insecureKubeletReadonlyPortEnabled: false
+  loggingConfig: {}
+  machineType: e2-medium
+  metadata:
+    disable-legacy-endpoints: 'true'
+  oauthScopes:
+  - https://www.googleapis.com/auth/cloud-platform
+  resourceLabels:
+    goog-gke-node-pool-provisioning-model: on-demand
+  serviceAccount: weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+  shieldedInstanceConfig:
+    enableIntegrityMonitoring: true
+  windowsNodeConfig: {}
+nodePoolAutoConfig:
+  nodeKubeletConfig:
+    insecureKubeletReadonlyPortEnabled: false
+nodePoolDefaults:
+  nodeConfigDefaults:
+    loggingConfig:
+      variantConfig:
+        variant: DEFAULT
+    nodeKubeletConfig:
+      insecureKubeletReadonlyPortEnabled: false
+nodePools:
+- config:
+    diskSizeGb: 50
+    diskType: pd-standard
+    effectiveCgroupMode: EFFECTIVE_CGROUP_MODE_V2
+    imageType: COS_CONTAINERD
+    kubeletConfig:
+      insecureKubeletReadonlyPortEnabled: false
+    loggingConfig: {}
+    machineType: e2-medium
+    metadata:
+      disable-legacy-endpoints: 'true'
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+    resourceLabels:
+      goog-gke-node-pool-provisioning-model: on-demand
+    serviceAccount: weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+    shieldedInstanceConfig:
+      enableIntegrityMonitoring: true
+    windowsNodeConfig: {}
+  etag: d0191034-811d-4566-8d4d-fa496a4190fd
+  initialNodeCount: 1
+  instanceGroupUrls:
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-c/instanceGroupManagers/gke-kestra-cluster-default-pool-2eb2e5a6-grp
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-f/instanceGroupManagers/gke-kestra-cluster-default-pool-723a1c4d-grp
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-a/instanceGroupManagers/gke-kestra-cluster-default-pool-da610606-grp
+  locations:
+  - us-central1-c
+  - us-central1-f
+  - us-central1-a
+  management:
+    autoRepair: true
+    autoUpgrade: true
+  maxPodsConstraint:
+    maxPodsPerNode: '110'
+  name: default-pool
+  networkConfig:
+    podIpv4CidrBlock: 10.4.0.0/14
+    podIpv4RangeUtilization: 0.0029
+    podRange: gke-kestra-cluster-pods-75caa7fb
+  podIpv4CidrSize: 24
+  selfLink: https://container.googleapis.com/v1/projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster/nodePools/default-pool
+  status: RUNNING
+  upgradeSettings:
+    maxSurge: 1
+    strategy: SURGE
+  version: 1.32.2-gke.1182003
+notificationConfig:
+  pubsub: {}
+podAutoscaling:
+  hpaProfile: HPA_PROFILE_UNSPECIFIED
+privateClusterConfig:
+  privateEndpoint: 10.128.0.2
+  publicEndpoint: 34.59.217.XX
+rbacBindingConfig:
+  enableInsecureBindingSystemAuthenticated: true
+  enableInsecureBindingSystemUnauthenticated: true
+releaseChannel:
+  channel: REGULAR
+resourceLabels:
+  goog-terraform-provisioned: 'true'
+satisfiesPzi: false
+satisfiesPzs: false
+securityPostureConfig:
+  mode: BASIC
+  vulnerabilityMode: VULNERABILITY_MODE_UNSPECIFIED
+selfLink: https://container.googleapis.com/v1/projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster
+servicesIpv4Cidr: 34.118.224.0/20
+shieldedNodes:
+  enabled: true
+status: RUNNING
+subnetwork: default
+zone: us-central1
+```
 
 ### 3. Data Pipeline (Kestra)
 
@@ -220,7 +443,7 @@ Workflow files:
   - Transform: Create optimized table with derived fields
   - Cleanup: Remove temporary resources
 
-**Screenshots:**
+**Screenshot:**
 ![Kestra Executions](images/kestra-executions.JPG)
 ![Kestra Successful Run](images/kestra-success.JPG)
 
@@ -236,7 +459,7 @@ Model files:
 - `models/dimensions/dim_stations.sql`: Station information with climate zones
 - `models/facts/fact_daily_weather.sql`: Complete fact table with all metrics
 
-**Screenshots:**
+**Screenshot:**
 ![dbt Models](images/dbt-model.JPG)
 ![dbt Lineage Graph](images/dbt-lineage-graph.JPG)
 
@@ -247,11 +470,6 @@ Our data pipeline creates several optimized tables in BigQuery:
 - `weather_analysis.weather_data_optimized`: Kestra-transformed data
 - `weather_dataset.dim_stations`: dbt dimension table with climate zones
 - `weather_dataset.fact_daily_weather`: dbt fact table with full analytical capabilities
-
-**Dataset Clarification:**
-- `temp_dataset`: Used for temporary storage during pipeline processing
-- `weather_analysis`: Contains the raw and optimized tables from Kestra
-- `weather_dataset`: Contains the final analytical models created by dbt
 
 The table structure enables efficient querying with:
 - Partitioning by month
@@ -276,49 +494,12 @@ A Looker Studio dashboard with:
    - precipitation categories by climate zone
 - A temporal trend (line chart of average temperatures over time)
 
-**Dashboard Link:** [NOAA Weather Analysis Dashboard](https://lookerstudio.google.com/reporting/51297cd7-9a7e-4350-bed8-340771325a2a/page/hnTIF)  
-*Note: This dashboard is publicly accessible, no special permissions required.*
-
-**Screenshots:**
+**Link: ** (https://lookerstudio.google.com/reporting/51297cd7-9a7e-4350-bed8-340771325a2a/page/hnTIF)
+**Screenshot:**
 ![Looker Studio Dashboard](images/dashboard-full.JPG)
-![Average Temperature](images/average-temperature.JPG)
+![Aveerage Temperature](images/average-temperature.JPG)
 ![Temperature Category](images/temperature-categories.JPG)
 ![Precipitation Category](images/precipitation-category.JPG)
-
-## Performance Metrics
-
-- **Data Volume**: Processed approximately 44 million weather records from 2020-2022
-- **Station Coverage**: Over 10,000 weather stations worldwide
-- **Processing Time**: Average pipeline execution completes in under 5 minutes
-- **Query Performance**: 
-  - Aggregation queries over a full year of data: ~3 seconds
-  - Filtering by station and date range: ~1 second
-  - Full table scans reduced by 85% due to partitioning and clustering
-- **Storage Efficiency**: Optimized table size is 30% smaller than the raw data
-
-## Security Considerations
-
-This project implements the following security best practices:
-
-1. **Service Account Least Privilege**: 
-   - Custom service account with only the required permissions
-   - Separate permissions for BigQuery and Storage access
-
-2. **Data Protection**:
-   - No personally identifiable information (PII) in the dataset
-   - Default encryption for all BigQuery tables and GCS buckets
-
-3. **Access Control**:
-   - IAM roles properly scoped to project resources
-   - Kubernetes RBAC for Kestra cluster access
-
-4. **Network Security**:
-   - GKE cluster with private nodes (optional configuration)
-   - BigQuery accessible only via authorized networks (can be configured)
-
-5. **Secrets Management**:
-   - Service account keys managed through Terraform
-   - No hardcoded credentials in code or configurations
 
 ## Setup Instructions
 
@@ -327,18 +508,9 @@ This project implements the following security best practices:
 - GCP account with billing enabled
 - Local installation of:
   - Terraform (v1.0.0+)
-  - Google Cloud SDK (v400.0.0+) with kubectl
-  - Helm (v3.8.0+) for Kestra deployment
+  - Google Cloud SDK with kubectl
+  - Helm (for Kestra deployment)
   - dbt (v1.0.0+)
-- Required GCP permissions:
-  - roles/resourcemanager.projectIamAdmin
-  - roles/container.admin
-  - roles/bigquery.admin
-  - roles/storage.admin
-- Estimated GCP costs:
-  - GKE cluster: ~$30-60/month (depends on node size and count)
-  - BigQuery: ~$5-20/month (depends on query volume)
-  - Storage: Minimal (<$1/month for this project)
 
 ### Step 1: Deploy Infrastructure with Terraform
 
@@ -411,20 +583,21 @@ cd weather_dbt
 dbt run
 ```
 
+
 ### Step 5: Create Looker Studio Dashboard
 
-1. Go to Looker Studio (https://lookerstudio.google.com/)
+1. Go to Looker Studio
 2. Create a new report
 3. Connect to your BigQuery table (weather_dataset.fact_daily_weather)
 4. Create visualizations:
-   - Temperature trends line chart
-   - Weather category distribution
-   - Station map
-   - Precipitation analysis
+
+- Temperature trends line chart
+- Weather category distribution
+- Station map
+- Precipitation analysis
 
 ## Implementation Details
-
-### GKE Cluster for Kestra
+GKE Cluster for Kestra
 The project uses a GKE cluster specifically configured for running Kestra:
 
 - Single-node e2-medium instance for cost efficiency
@@ -433,7 +606,7 @@ The project uses a GKE cluster specifically configured for running Kestra:
 - Helm chart for simplified Kestra deployment
 - LoadBalancer service for easy UI access
 
-### BigQuery Optimization
+## BigQuery Optimization
 The data warehouse uses several optimization techniques:
 
 - Partitioning by month to improve query performance on time-based analysis
@@ -441,67 +614,34 @@ The data warehouse uses several optimization techniques:
 - Categorical fields to simplify analysis of weather patterns
 - Climate zone derivation for regional analysis
 
-### dbt Data Modeling
+## dbt Data Modeling
 The dbt implementation follows a layered approach:
 
 - Staging layer: Clean and prepare data from the source
 - Dimension layer: Create climate zone classifications for stations
 - Fact layer: Combine all metrics with dimensions for analysis
 
-## Troubleshooting
-
-### Common Issues and Solutions
-
-#### Terraform Deployment Failures
-- **Issue**: Quota limits exceeded
-  - **Solution**: Request quota increases for GKE resources in your project
-- **Issue**: Permission denied errors
-  - **Solution**: Ensure your account has the required IAM roles listed in prerequisites
-
-#### Kestra Deployment Issues
-- **Issue**: Kestra pod fails to start
-  - **Solution**: Check pod logs with `kubectl logs <pod-name>`
-  - **Solution**: Ensure service account has proper permissions
-- **Issue**: Cannot access Kestra UI
-  - **Solution**: Verify LoadBalancer service is running with `kubectl get svc`
-  - **Solution**: Check firewall rules to ensure port 8080 is open
-
-#### BigQuery Errors
-- **Issue**: Table not found in queries
-  - **Solution**: Check dataset and table names, ensure proper project ID is specified
-- **Issue**: Permission denied reading public dataset
-  - **Solution**: Verify service account has bigquery.jobs.create permission
-- **Issue**: Query timeout errors
-  - **Solution**: Optimize query or increase timeout setting
-
-#### dbt Run Failures
-- **Issue**: Connection errors
-  - **Solution**: Verify profiles.yml configuration with correct project and dataset
-- **Issue**: Model errors
-  - **Solution**: Check SQL syntax and table references in models
-
 ## Project Results
 The project successfully processes and analyzes NOAA weather data from 2020-2022, providing insights through:
-
-### Data Volume and Processing
+Data Volume and Processing
 
 - Processed over 44 million weather records from thousands of stations worldwide
 - Organized data by climate zones and time periods for efficient querying
 - Reduced query costs through appropriate partitioning and clustering
 
-### Key Insights
+## Key Insights
 
 - Identified significant temperature variations across climate zones
 - Analyzed precipitation patterns and their seasonal distribution
 - Created categorized weather metrics for simplified analysis
 
-### Visualization Highlights
+## Visualization Highlights
 
 - Temperature trends over time by climate zone
 - Distribution of precipitation categories
 - Weather station distribution map
 
-### Lessons Learned
+## Lessons Learned
 
 - Successfully implemented a complete cloud-based data engineering pipeline
 - Deployed and managed containerized workflow orchestration on Kubernetes
@@ -515,17 +655,11 @@ The project successfully processes and analyzes NOAA weather data from 2020-2022
 - Implement machine learning models for weather prediction
 - Expand analysis to include more weather metrics
 - Incorporate other datasets (e.g., climate change indicators)
-- Add CI/CD pipeline for automated deployment
-- Implement cost optimization strategies for BigQuery queries
-- Develop automated monitoring and alerting for the pipeline
 
 ## References
 
-- [NOAA Global Summary of Day (GSOD) Dataset](https://www.ncei.noaa.gov/access/metadata/landing-page/bin/iso?id=gov.noaa.ncdc:C00516)
-- [BigQuery Documentation](https://cloud.google.com/bigquery/docs)
-- [Kestra Documentation](https://kestra.io/docs)
-- [dbt Documentation](https://docs.getdbt.com/)
-- [GKE Documentation](https://cloud.google.com/kubernetes-engine/docs)
-- [Terraform Google Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
-- [Looker Studio Documentation](https://support.google.com/looker-studio)
-- [Google Cloud IAM Documentation](https://cloud.google.com/iam/docs)
+- NOAA Global Summary of Day (GSOD) Dataset
+- BigQuery Documentation
+- Kestra Documentation
+- dbt Documentation
+- GKE Documentation
