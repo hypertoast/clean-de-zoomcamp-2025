@@ -406,8 +406,8 @@ Model files:
 - `models/facts/fact_daily_weather.sql`: Complete fact table with all metrics
 
 **Screenshot:**
-![dbt Models](images/dbt_models.png)
-*[Screenshot of dbt model lineage graph]*
+![dbt Models](images/dbt-model.JPG)
+![dbt Lineage Graph](images/dbt-lineage-graph.JPG)
 
 ### 5. Analytics (BigQuery)
 
