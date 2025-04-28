@@ -1,0 +1,8 @@
+id: test
+namespace: io.kestra.tests
+description: Simple test workflow
+
+tasks:
+  - id: simple_task
+    type: io.kestra.core.tasks.log.Log
+    message: Hello from Kestra!

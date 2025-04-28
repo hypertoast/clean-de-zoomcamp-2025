@@ -1,0 +1,77 @@
+id: noaa_weather_ingest
+namespace: weather
+description: |
+  Extracts NOAA GSOD data from the public BigQuery dataset, 
+  processes it, and loads it into our optimized table structure
+
+tasks:
+  # Task 1: Extract data from public NOAA dataset
+  - id: extract_data
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      SELECT 
+        PARSE_DATE('%Y%m%d', CONCAT(year, mo, da)) as date,
+        stn as station_id,
+        name as station_name,
+        lat as latitude,
+        lon as longitude,
+        temp as avg_temperature,
+        max as max_temperature,
+        min as min_temperature,
+        prcp as precipitation,
+        wdsp as wind_speed,
+        visib as visibility
+      FROM `bigquery-public-data.noaa_gsod.gsod*` g
+      JOIN `bigquery-public-data.noaa_gsod.stations` s
+      ON g.stn = s.usaf AND g.wban = s.wban
+      WHERE 
+        _TABLE_SUFFIX BETWEEN '2020' AND '2022'
+        AND prcp != 99.99  -- Filter out invalid precipitation data
+        AND temp != 9999.9 -- Filter out invalid temperature data
+        AND g.stn IS NOT NULL
+    destinationTable: "{{gcp.project}}.temp_dataset.noaa_weather_raw"
+    serviceAccount: "{{gcp.serviceAccount}}"
+
+  # Task 2: Transform data and save to final table
+  - id: transform_data
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      CREATE OR REPLACE TABLE `{{gcp.project}}.weather_analysis.weather_data_optimized`
+      PARTITION BY DATE_TRUNC(date, MONTH)
+      CLUSTER BY station_id, latitude, longitude
+      AS
+      SELECT
+        date,
+        station_id,
+        station_name,
+        latitude,
+        longitude,
+        ROUND(avg_temperature, 2) as avg_temperature,
+        ROUND(max_temperature, 2) as max_temperature,
+        ROUND(min_temperature, 2) as min_temperature,
+        ROUND(precipitation, 2) as precipitation,
+        ROUND(wind_speed, 2) as wind_speed,
+        ROUND(visibility, 2) as visibility,
+        CASE
+          WHEN precipitation > 0.5 THEN 'Heavy Rain'
+          WHEN precipitation > 0.1 THEN 'Light Rain'
+          WHEN precipitation > 0 THEN 'Drizzle'
+          ELSE 'No Rain'
+        END as precipitation_category,
+        CASE
+          WHEN avg_temperature > 30 THEN 'Very Hot'
+          WHEN avg_temperature > 25 THEN 'Hot'
+          WHEN avg_temperature > 15 THEN 'Warm'
+          WHEN avg_temperature > 5 THEN 'Cool'
+          WHEN avg_temperature > -5 THEN 'Cold'
+          ELSE 'Very Cold'
+        END as temperature_category
+      FROM `{{gcp.project}}.temp_dataset.noaa_weather_raw`
+    serviceAccount: "{{gcp.serviceAccount}}"
+
+  # Task 3: Clean up temporary table using a Query task with DROP TABLE
+  - id: cleanup
+    type: io.kestra.plugin.gcp.bigquery.Query
+    sql: |
+      DROP TABLE IF EXISTS `{{gcp.project}}.temp_dataset.noaa_weather_raw`
+    serviceAccount: "{{gcp.serviceAccount}}"
