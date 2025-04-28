@@ -53,9 +53,116 @@ Key Terraform files:
 - `main.tf`: Main infrastructure definition including GKE setup
 - `variables.tf`: Variable definitions for project ID and region
 
-**Screenshot:**
-![Terraform Deployment](images/terraform_deployment.png)
-*[Screenshot of successful Terraform deployment]*
+**Terraform apply output (snippet):**
+
+```bash
+[calvin@devsjc terraform]$ export PROJECT_ID=de-zoomcamp-p3-gsod
+
+[calvin@devsjc terraform]$ terraform apply -var="project_id=de-zoomcamp-p3-gsod" -var="region=us-central1"
+google_service_account.pipeline_service_account: Creating...
+google_bigquery_dataset.temp_dataset: Creating...
+google_storage_bucket.data_lake: Creating...
+google_bigquery_dataset.weather_dataset: Creating...
+google_storage_bucket.kestra_storage: Creating...
+google_bigquery_dataset.weather_dataset: Creation complete after 0s [id=projects/de-zoomcamp-p3-gsod/datasets/weather_analysis]
+google_bigquery_dataset.temp_dataset: Creation complete after 0s [id=projects/de-zoomcamp-p3-gsod/datasets/temp_dataset]
+google_storage_bucket.kestra_storage: Creation complete after 1s [id=de-zoomcamp-p3-gsod-kestra]
+google_storage_bucket_object.kestra_workflow: Creating...
+google_storage_bucket.data_lake: Creation complete after 1s [id=de-zoomcamp-p3-gsod-datalake]
+google_storage_bucket_object.kestra_workflow: Creation complete after 0s [id=de-zoomcamp-p3-gsod-kestra-workflows/noaa_weather_ingest.yml]
+google_service_account.pipeline_service_account: Still creating... [10s elapsed]
+google_service_account.pipeline_service_account: Creation complete after 12s [id=projects/de-zoomcamp-p3-gsod/serviceAccounts/weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com]
+google_project_iam_binding.storage_admin: Creating...
+google_project_iam_binding.bigquery_admin: Creating...
+google_container_cluster.kestra_cluster: Creating...
+google_project_iam_binding.bigquery_admin: Creation complete after 8s [id=de-zoomcamp-p3-gsod/roles/bigquery.admin]
+google_project_iam_binding.storage_admin: Creation complete after 8s [id=de-zoomcamp-p3-gsod/roles/storage.admin]
+google_container_cluster.kestra_cluster: Still creating... [10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [1m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [2m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [3m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m30s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m40s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [4m50s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m0s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m10s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m20s elapsed]
+google_container_cluster.kestra_cluster: Still creating... [5m30s elapsed]
+google_container_cluster.kestra_cluster: Creation complete after 5m31s [id=projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster]
+
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+gcs_bucket = "de-zoomcamp-p3-gsod-datalake"
+gke_cluster = "kestra-cluster"
+gke_command = "gcloud container clusters get-credentials kestra-cluster --region us-central1 --project de-zoomcamp-p3-gsod"
+kestra_install_commands = <<EOT
+# Get cluster credentials
+gcloud container clusters get-credentials kestra-cluster --region us-central1 --project de-zoomcamp-p3-gsod
+
+# Install Kestra using Helm
+helm repo add kestra https://kestra-io.github.io/helm-charts
+helm repo update
+helm install kestra kestra/kestra \
+  --set env.config.kestra.storage.type=gcs \
+  --set env.config.kestra.storage.gcs.bucket=de-zoomcamp-p3-gsod-kestra \
+  --set env.config.kestra.variables.gcp.project=de-zoomcamp-p3-gsod \
+  --set env.config.kestra.variables.gcp.serviceAccount=weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+
+
+NAME: kestra
+LAST DEPLOYED: Sun Apr 27 22:21:39 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=kestra,app.kubernetes.io/instance=kestra,app.kubernetes.io/component=standalone" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl port-forward --namespace default $POD_NAME 8080:8080
+  
+
+# Create a service to access the UI
+kubectl expose deployment kestra --type=LoadBalancer --name=kestra-ui --port=8080
+
+# Get the external IP (this may take a minute)
+kubectl get service kestra-ui
+
+# Wait until you see an external IP, then import the workflow
+export KESTRA_URL=$(kubectl get service kestra-ui -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):8080
+curl -X POST "http://$KESTRA_URL/api/v1/flows/import" -H "Content-Type: application/yaml" --data-binary @<(gsutil cat gs://de-zoomcamp-p3-gsod-kestra/workflows/noaa_weather_ingest.yml)
+
+# Execute the workflow
+curl -X POST "http://$KESTRA_URL/api/v1/executions" -H "Content-Type: application/json" -d '{"namespace":"weather","flowId":"noaa_weather_ingest"}'
+
+EOT
+kestra_storage_bucket = "de-zoomcamp-p3-gsod-kestra"
+service_account = "weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com"
+```
 
 ### 2. Kubernetes Deployment for Kestra
 
