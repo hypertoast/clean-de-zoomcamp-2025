@@ -390,7 +390,7 @@ Workflow files:
   - Cleanup: Remove temporary resources
 
 **Screenshot:**
-![Kestra Executions](images/kestra-execution.JPG)
+![Kestra Executions](images/kestra-executions.JPG)
 ![Kestra Successful Run](images/kestra-success.JPG)
 
 ### 4. Data Transformations (dbt)
@@ -435,14 +435,17 @@ The table structure enables efficient querying with:
 ### 6. Visualization (Looker Studio)
 
 A Looker Studio dashboard with:
-- Temperature trends over time by climate zone (line chart)
-- Distribution of weather categories by region (pie chart)
-- Station map with temperature indicators (geo map)
-- Precipitation patterns analysis (bar chart)
+- A categorical distribution
+   - pie chart of temperature categories
+   - precipitation categories by climate zone
+- A temporal trend (line chart of average temperatures over time)
 
+**Link: ** (https://lookerstudio.google.com/reporting/51297cd7-9a7e-4350-bed8-340771325a2a/page/hnTIF)
 **Screenshot:**
-![Looker Studio Dashboard](images/looker_dashboard.png)
-*[Screenshot of the Looker Studio dashboard]*
+![Looker Studio Dashboard](images/dashboard-full.JPG)
+![Aveerage Temperature](images/average-temperature.JPG)
+![Temperature Category](images/temperature-categories.JPG)
+![Precipitation Category](images/precipitation-category.JPG)
 
 ## Setup Instructions
 
