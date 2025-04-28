@@ -171,9 +171,210 @@ The project uses a GKE cluster to run Kestra for workflow orchestration:
 - Helm chart for Kestra deployment
 - LoadBalancer service to expose the Kestra UI
 
-**Screenshot:**
-![GKE Cluster](images/gke_cluster.png)
-*[Screenshot of GKE cluster running Kestra]*
+**Snippet of GKE Cluster:**
+```bash
+(.venv) [calvin@devsjc DE-ZoomCamp]$ gcloud container clusters describe kestra-cluster --region=us-central1
+addonsConfig:
+  gcePersistentDiskCsiDriverConfig:
+    enabled: true
+  kubernetesDashboard:
+    disabled: true
+  networkPolicyConfig:
+    disabled: true
+autopilot: {}
+autoscaling:
+  autoscalingProfile: BALANCED
+binaryAuthorization: {}
+clusterIpv4Cidr: 10.4.0.0/14
+controlPlaneEndpointsConfig:
+  dnsEndpointConfig:
+    allowExternalTraffic: false
+    endpoint: gke-75caa7fbdd624651ae8f8534d56f2dc2111a-292021135316.us-central1.gke.goog
+  ipEndpointsConfig:
+    authorizedNetworksConfig:
+      gcpPublicCidrsAccessEnabled: true
+    enablePublicEndpoint: true
+    enabled: true
+    privateEndpoint: 10.128.0.2
+    publicEndpoint: 34.59.217.xx
+createTime: '2025-04-28T02:09:11+00:00'
+currentMasterVersion: 1.32.2-gke.1182003
+currentNodeCount: 3
+currentNodeVersion: 1.32.2-gke.1182003
+databaseEncryption:
+  currentState: CURRENT_STATE_DECRYPTED
+  state: DECRYPTED
+defaultMaxPodsConstraint:
+  maxPodsPerNode: '110'
+endpoint: 34.59.217.143
+enterpriseConfig:
+  clusterTier: STANDARD
+etag: 52e82870-5074-44eb-9ffa-e62c6390620f
+id: 75caa7fbdd624651ae8f8534d56f2dc2111a1aa50f5042268c1ca4cbb76c0193
+initialClusterVersion: 1.32.2-gke.1182003
+initialNodeCount: 1
+instanceGroupUrls:
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-c/instanceGroupManagers/gke-kestra-cluster-default-pool-2eb2e5a6-grp
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-f/instanceGroupManagers/gke-kestra-cluster-default-pool-723a1c4d-grp
+- https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-a/instanceGroupManagers/gke-kestra-cluster-default-pool-da610606-grp
+ipAllocationPolicy:
+  clusterIpv4Cidr: 10.4.0.0/14
+  clusterIpv4CidrBlock: 10.4.0.0/14
+  clusterSecondaryRangeName: gke-kestra-cluster-pods-75caa7fb
+  defaultPodIpv4RangeUtilization: 0.0029
+  podCidrOverprovisionConfig: {}
+  servicesIpv4Cidr: 34.118.224.0/20
+  servicesIpv4CidrBlock: 34.118.224.0/20
+  stackType: IPV4
+  useIpAliases: true
+labelFingerprint: 78cdf2f6
+legacyAbac: {}
+location: us-central1
+locations:
+- us-central1-c
+- us-central1-f
+- us-central1-a
+loggingConfig:
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - WORKLOADS
+loggingService: logging.googleapis.com/kubernetes
+maintenancePolicy:
+  resourceVersion: e3b0c442
+masterAuth:
+  clientCertificateConfig: {}
+  clusterCaCertificate: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVMVENDQXBXZ0F3SUJBZ0lSQUlySGlHbk55aVFnQmpWWFlBYytpTE13RFFZSktvWklodmNOQVFFTEJRQXcKTHpFdE1Dc0dBMVVFQXhNa056UTBPVGsyTlRndE9HVmhNaTAwTURFNExUZ3daR1V0WVRkaE1qSmpaVFZpTlRrMQpNQ0FYRFRJMU1EUXlPREF4TURreE1sb1lEekl3TlRVd05ESXhNREl3T1RFeVdqQXZNUzB3S3dZRFZRUURFeVEzCk5EUTVPVFkxT0MwNFpXRXlMVFF3TVRndE9EQmtaUzFoTjJFeU1tTmxOV0kxT1RVd2dnR2lNQTBHQ1NxR1NJYjMKRFFFQkFRVUFBNElCandBd2dnR0tBb0lCZ1FDcTIxOHZTR1BLU1ppWGNXWGExc0tYUWhmekpOaUV1dWQ1OUxvWgpLNlNWalhzcnNDSzNUQWl6NnFMZzllbUVta2M1UW5BN0Y0UGhRaXhHcXIranhaS0xyclIzZWlWd3lFSVlUeVV4CmIzUllITHJtSDIzdFcvbTRpZmdIYmxsL1A3cElZdVJLYmhRK2tKNE43S1dwMzJDMmk2Ym9NSW1NbU55VEJJZjMKV0gxYjRaRUx3bmlVZkhRZWlCdi8wYjhGbkNjdDFWb1ZzVXV1UkNxTzl4eEFuV0Fyd05Fc1cwKzV2bTdVcW5PWQpoV1FaMlErMVZPRUREK1Y0N3VxZXlrbFZOVjZPYktrN3JDOEU0c09LcXJMSVJTenN5VG05MkRsaDNSVVF0alhFClRkc2tKbUhvQjRmMGtwQ3VmSGFlNS9VNGlVUmxjSUxZaDZqOW5UK2w0dml1TFR2N09jeGVjYXk1OGVUVXZrMUcKa0ZER1pWanBtMS9UTXpzMWpwMzJrc0t5Q3ppazJpOXB4Z2FGb2QySjVIaHZOQUVvbmtxQzBnRTBRblF1b29ueApiZjY2M1pKaXQrcitlOU5EbkUxdTViaVpUQ1JwTkFkdGROcDhhdHZGTXBUQjhsUHhTRktuaEcwbmY4MWlpK2xBCnVNcElSM0ZBaWk4NDNRc2RWWk5WSXY4MU05OENBd0VBQWFOQ01FQXdEZ1lEVlIwUEFRSC9CQVFEQWdJRU1BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGRXNFRUJPdWxoN0txejBzNFVwNU5JMkZJaUJpTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQmdRQmhDbkIrY1VKSERVUW41NU9pdDJKbWxSY3g4RDhvTlpoUnNXeXVzVXhuCmVyMUloWUtvNE54NUY3OTdiL1AzdUU1anY0UGJRUFI2K0JvTHVscVF0Y21WdDVRYlRyK29iL04vTmVKZ01leVgKNXgrSDBYdnBVSU5PZW9zL1JxdGRQdUFPT0U0QlovMDJLQjRLQlFhU2NzbEsrZVhwZG5KQzBuWEhPN0w2cUZMWQoveXJsdU8xNDB1SUkzd095SS81N0Z3VmVRZEpqKzBIMWFPV2FqR0tmSDAxTDFzMnV1MTNSMDdoTUJjeDNoTEUvCmNIc1QwTFpJTUdvNDBkVDBtc2dJeCtCb2ZMK0hsNTR1NjNGaElmRjZDdXlsRWlPbU5wZmtzcmk1dkxaNUNxN0QKbXlQQ2taVGkzU3Y2S0diMjVPdDJLL3JiLzNScFhmclF4bjEwUTlBNHRXTkZRRHlIUTFLbGxvTS81OWRTZEJOTwpSOTA1QWVFVGI0ckwrZU10RXNSeSt3cGkxSmhWdjBJb3ZidE0wdFQrTGs4Um5yNTIxdmFMaWdxZ0ZaZ3JBSndwCkd0OTVwL3h2Y3J0c1ZKK2dJaDhuaHBuTWtGenVUUVNlaThCRFI1Q2plMExwN2xWVytFSm1CRG0wQ0NRaVdibngKK1Y1WDhISkk4YlFseWphQUxIYVFrVjQ9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+masterAuthorizedNetworksConfig:
+  gcpPublicCidrsAccessEnabled: true
+monitoringConfig:
+  advancedDatapathObservabilityConfig: {}
+  componentConfig:
+    enableComponents:
+    - SYSTEM_COMPONENTS
+    - DAEMONSET
+    - DEPLOYMENT
+    - STATEFULSET
+    - JOBSET
+    - STORAGE
+    - HPA
+    - POD
+    - CADVISOR
+    - KUBELET
+    - DCGM
+  managedPrometheusConfig:
+    enabled: true
+monitoringService: monitoring.googleapis.com/kubernetes
+name: kestra-cluster
+network: default
+networkConfig:
+  defaultSnatStatus: {}
+  network: projects/de-zoomcamp-p3-gsod/global/networks/default
+  serviceExternalIpsConfig: {}
+  subnetwork: projects/de-zoomcamp-p3-gsod/regions/us-central1/subnetworks/default
+nodeConfig:
+  diskSizeGb: 50
+  diskType: pd-standard
+  effectiveCgroupMode: EFFECTIVE_CGROUP_MODE_V2
+  imageType: COS_CONTAINERD
+  kubeletConfig:
+    insecureKubeletReadonlyPortEnabled: false
+  loggingConfig: {}
+  machineType: e2-medium
+  metadata:
+    disable-legacy-endpoints: 'true'
+  oauthScopes:
+  - https://www.googleapis.com/auth/cloud-platform
+  resourceLabels:
+    goog-gke-node-pool-provisioning-model: on-demand
+  serviceAccount: weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+  shieldedInstanceConfig:
+    enableIntegrityMonitoring: true
+  windowsNodeConfig: {}
+nodePoolAutoConfig:
+  nodeKubeletConfig:
+    insecureKubeletReadonlyPortEnabled: false
+nodePoolDefaults:
+  nodeConfigDefaults:
+    loggingConfig:
+      variantConfig:
+        variant: DEFAULT
+    nodeKubeletConfig:
+      insecureKubeletReadonlyPortEnabled: false
+nodePools:
+- config:
+    diskSizeGb: 50
+    diskType: pd-standard
+    effectiveCgroupMode: EFFECTIVE_CGROUP_MODE_V2
+    imageType: COS_CONTAINERD
+    kubeletConfig:
+      insecureKubeletReadonlyPortEnabled: false
+    loggingConfig: {}
+    machineType: e2-medium
+    metadata:
+      disable-legacy-endpoints: 'true'
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+    resourceLabels:
+      goog-gke-node-pool-provisioning-model: on-demand
+    serviceAccount: weather-pipeline-sa@de-zoomcamp-p3-gsod.iam.gserviceaccount.com
+    shieldedInstanceConfig:
+      enableIntegrityMonitoring: true
+    windowsNodeConfig: {}
+  etag: d0191034-811d-4566-8d4d-fa496a4190fd
+  initialNodeCount: 1
+  instanceGroupUrls:
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-c/instanceGroupManagers/gke-kestra-cluster-default-pool-2eb2e5a6-grp
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-f/instanceGroupManagers/gke-kestra-cluster-default-pool-723a1c4d-grp
+  - https://www.googleapis.com/compute/v1/projects/de-zoomcamp-p3-gsod/zones/us-central1-a/instanceGroupManagers/gke-kestra-cluster-default-pool-da610606-grp
+  locations:
+  - us-central1-c
+  - us-central1-f
+  - us-central1-a
+  management:
+    autoRepair: true
+    autoUpgrade: true
+  maxPodsConstraint:
+    maxPodsPerNode: '110'
+  name: default-pool
+  networkConfig:
+    podIpv4CidrBlock: 10.4.0.0/14
+    podIpv4RangeUtilization: 0.0029
+    podRange: gke-kestra-cluster-pods-75caa7fb
+  podIpv4CidrSize: 24
+  selfLink: https://container.googleapis.com/v1/projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster/nodePools/default-pool
+  status: RUNNING
+  upgradeSettings:
+    maxSurge: 1
+    strategy: SURGE
+  version: 1.32.2-gke.1182003
+notificationConfig:
+  pubsub: {}
+podAutoscaling:
+  hpaProfile: HPA_PROFILE_UNSPECIFIED
+privateClusterConfig:
+  privateEndpoint: 10.128.0.2
+  publicEndpoint: 34.59.217.XX
+rbacBindingConfig:
+  enableInsecureBindingSystemAuthenticated: true
+  enableInsecureBindingSystemUnauthenticated: true
+releaseChannel:
+  channel: REGULAR
+resourceLabels:
+  goog-terraform-provisioned: 'true'
+satisfiesPzi: false
+satisfiesPzs: false
+securityPostureConfig:
+  mode: BASIC
+  vulnerabilityMode: VULNERABILITY_MODE_UNSPECIFIED
+selfLink: https://container.googleapis.com/v1/projects/de-zoomcamp-p3-gsod/locations/us-central1/clusters/kestra-cluster
+servicesIpv4Cidr: 34.118.224.0/20
+shieldedNodes:
+  enabled: true
+status: RUNNING
+subnetwork: default
+zone: us-central1
+```
 
 ### 3. Data Pipeline (Kestra)
 
@@ -189,8 +390,8 @@ Workflow files:
   - Cleanup: Remove temporary resources
 
 **Screenshot:**
-![Kestra Workflow](images/kestra_workflow.png)
-*[Screenshot of the Kestra workflow execution]*
+![Kestra Executions](images/kestra-execution.JPG)
+![Kestra Successful Run](images/kestra-success.JPG)
 
 ### 4. Data Transformations (dbt)
 
@@ -221,9 +422,15 @@ The table structure enables efficient querying with:
 - Clustering by station_id
 - Derived categorical fields for temperature and precipitation
 
-**Screenshot:**
-![BigQuery Tables](images/bigquery_tables.png)
-*[Screenshot of BigQuery tables and sample query]*
+**BigQuery datasets:**
+```bash
+(.venv) [calvin@devsjc DE-ZoomCamp]$ bq ls
+     datasetId      
+ ------------------ 
+  temp_dataset      
+  weather_analysis  
+  weather_dataset   
+```
 
 ### 6. Visualization (Looker Studio)
 
@@ -252,8 +459,8 @@ A Looker Studio dashboard with:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/noaa-weather-pipeline.git
-cd noaa-weather-pipeline/terraform
+git clone https://github.com/hypertoast/clean-de-zoomcamp-2025.git
+cd terraform
 
 # Initialize Terraform
 terraform init
