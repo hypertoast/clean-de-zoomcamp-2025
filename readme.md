@@ -122,12 +122,10 @@ noaa-weather-pipeline/
 ├── terraform/                  # Infrastructure as code
 │   ├── main.tf                 # Main Terraform configuration
 │   ├── variables.tf            # Variable definitions
-│   ├── outputs.tf              # Output definitions
-│   └── README.md               # Terraform specific instructions
 ├── kestra/                     # Workflow orchestration
 │   └── workflows/
 │       └── noaa_weather_ingest.yml  # Data ingestion workflow
-├── dbt/                        # Data transformation
+├── dbt/weather_dbt                        # Data transformation
 │   ├── models/
 │   │   ├── staging/
 │   │   │   └── stg_weather_data.sql
@@ -137,8 +135,6 @@ noaa-weather-pipeline/
 │   │       └── fact_daily_weather.sql
 │   ├── dbt_project.yml
 │   └── profiles.yml
-├── dashboards/                 # Looker Studio exports
-│   └── weather_dashboard.json
 ├── images/                     # Documentation images
 │   ├── Architecture.JPG
 │   ├── GKE.JPG
@@ -497,9 +493,8 @@ The project successfully processes and analyzes NOAA weather data from 2020-2022
 
 ### Visualization Highlights
 
-- Temperature trends over time by climate zone
+- Temperature trends over time
 - Distribution of precipitation categories
-- Weather station distribution map
 
 ### Lessons Learned
 
